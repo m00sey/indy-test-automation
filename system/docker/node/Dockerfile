@@ -1,10 +1,10 @@
-FROM solita/ubuntu-systemd
+FROM m00sey/ubuntu-systemd
 
 # Install environment
 RUN apt-get update -y && apt-get install -y \
         git \
         wget \
-        python3.5 \
+        python3 \
         python3-pip \
         python-setuptools \
         python3-nacl \
@@ -14,10 +14,48 @@ RUN apt-get update -y && apt-get install -y \
         vim \
         mc \
         stress \
+        automake \
+        bison \
+        build-essential \
+        ca-certificates \
+        cmake \
+        curl \
+        flex \
+        gettext \
+        libbz2-dev \
+        libffi-dev \
+        libgflags-dev \
+        libgmp-dev \
+        liblz4-dev \
+        liblzma-dev \
+        libncurses5-dev \
+        libncursesw5-dev \
+        libreadline-gplv2-dev \
+        libsecp256k1-dev \
+        libsnappy-dev \
+        libsqlite3-dev \
+        libssl-dev \
+        libtool \
+        libzmq3-dev \
+        pkg-config \
+        zlib1g-dev \
 	&& rm -rf /var/lib/apt/lists/*
 
+ARG nacl_lib_ver=1.0.16
+
+# Build and install libsodium library
+RUN curl -o libsodium-${nacl_lib_ver}.tar.gz \
+        "https://download.libsodium.org/libsodium/releases/old/libsodium-${nacl_lib_ver}.tar.gz" && \
+    tar xzvf libsodium-${nacl_lib_ver}.tar.gz && \
+    cd libsodium-${nacl_lib_ver} && \
+    CFLAGS="-Os" ./configure && \
+    make install && \
+    cd .. && \
+    mkdir -p "$HOME/.local/lib" && \
+    cp -a /usr/local/lib/libsodium.so* "$HOME/.local/lib" && \
+    rm -rf libsodium-${nacl_lib_ver}*
+
 RUN pip3 install -U \
-        'pip<10.0.0' \
         setuptools
 
 ARG INDY_NODE_REPO_COMPONENT

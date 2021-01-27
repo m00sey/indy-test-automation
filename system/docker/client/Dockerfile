@@ -1,4 +1,4 @@
-FROM teracy/ubuntu:16.04-dind-latest
+FROM teracy/ubuntu:18.04-dind-latest
 
 # generally useful packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -13,22 +13,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # python
 ARG PYTHON3_VERSION
-ENV PYTHON3_VERSION=${PYTHON3_VERSION:-3.5}
+ENV PYTHON3_VERSION=${PYTHON3_VERSION:-3.8}
 RUN apt-get update && apt-get install -y \
         python${PYTHON3_VERSION} \
         python3-pip \
         python-setuptools \
     && rm -rf /var/lib/apt/lists/*
 
-# pypi based packages
-# issues with pip>=10:
-# https://github.com/pypa/pip/issues/5240
-# https://github.com/pypa/pip/issues/5221
 RUN python3 -m pip install -U \
         pip \
         setuptools \
-        virtualenv==16.0.0 \
-        pipenv==2018.11.26 \
+        virtualenv \
+        pipenv \
     && pip3 list
 
 # libindy
